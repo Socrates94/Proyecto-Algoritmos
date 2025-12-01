@@ -155,10 +155,13 @@ public class ClausuraTransitivaReflexiva {
 
                     calcularClausura(relacion);
 
-                    // 2. RESOLVER 2-SAT (NUEVO)
+                    // calcular clausuras transitivas (NUEVO)
+                    ConversorClausulas.calcularClausurasTransitivas(relacion);
+
+                    // RESOLVER 2-SAT (NUEVO)
                     boolean esSatisfacible = ConversorClausulas.resolver2SAT(relacion);
 
-                    // 3. Mostrar resultado final
+                    // mostrar resultado final
                     System.out.println("\n" + "=".repeat(50));
                     if (esSatisfacible) {
                         System.out.println("RESULTADO 2-SAT:  SATISFACIBLE");

@@ -139,97 +139,180 @@ public class ConversorClausulas {
                 binarias.size() + " binarias");
     }
 
-    // MÉTODO SIMPLE PARA GRAFICAR LAS IMPLICACIONES - VERSIÓN CORREGIDA
-    public static void graficarImplicaciones(Set<Clausula> clausulas) {
-
-        System.out.println("\n=== CREANDO GRÁFICO DE IMPLICACIONES ===");
-
-        try {
-            System.setProperty("org.graphstream.ui", "swing");
-            Graph graph = new SingleGraph("Implicaciones Lógicas");
-
-            // ESTILO MEJORADO - Deshabilitar layout automático
+    // metodo SIMPLE PARA GRAFICAR LAS IMPLICACIONES - VERSIÓN CORREGIDA
+//    public static void graficarImplicaciones(Set<Clausula> clausulas) {
+//
+//        System.out.println("\n=== CREANDO GRÁFICO DE IMPLICACIONES ===");
+//
+//        try {
+//            System.setProperty("org.graphstream.ui", "swing");
+//            Graph graph = new SingleGraph("Implicaciones Lógicas");
+//
+//            // ESTILO MEJORADO - Deshabilitar layout automático
+////            graph.setAttribute("ui.stylesheet",
+////                    "node { fill-color: blue; size: 30px; text-mode: normal; text-size: 18; }" +
+////                            "edge { fill-color: red; arrow-size: 20px, 8px; }");
+////            graph.setAttribute("ui.stylesheet",
+////                    "graph { fill-color: black; }" +
+////                            "node { fill-color: white; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" +
+////                            "edge { fill-color: red; arrow-size: 20px, 8px; }");
+//
 //            graph.setAttribute("ui.stylesheet",
-//                    "node { fill-color: blue; size: 30px; text-mode: normal; text-size: 18; }" +
-//                            "edge { fill-color: red; arrow-size: 20px, 8px; }");
-//            graph.setAttribute("ui.stylesheet",
-//                    "graph { fill-color: black; }" +
-//                            "node { fill-color: white; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" +
-//                            "edge { fill-color: red; arrow-size: 20px, 8px; }");
+//                    "graph { fill-color: white; }" +                    // FONDO BLANCO
+//                            "node { fill-color: black; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" +  // NODO NEGRO, TEXTO BLANCO
+//                            "edge { fill-color: red; arrow-size: 20px, 8px; }"); // ARISTAS ROJAS
+//
+//            // DESHABILITAR LAYOUT AUTOMÁTICO
+//            graph.setAttribute("layout.quality", 0);
+//            graph.setAttribute("ui.quality");
+//
+//            Set<String> literalesUnicos = new HashSet<>();
+//
+//            // Primero recolectar todos los literales únicos
+//            for (Clausula c : clausulas) {
+//                if (!c.esUnitaria()) {
+//                    literalesUnicos.add(c.literal1);
+//                    literalesUnicos.add(c.literal2);
+//                    // También agregar sus complementos
+//                    literalesUnicos.add(obtenerComplemento(c.literal1));
+//                    literalesUnicos.add(obtenerComplemento(c.literal2));
+//                }
+//            }
+//
+//            // Crear nodos con POSICIÓN MANUAL
+//            int posX = 0;
+//            int posY = 0;
+//            List<String> listaLiterales = new ArrayList<>(literalesUnicos);
+//            Collections.sort(listaLiterales);
+//
+//            for (String literal : listaLiterales) {
+//                if (graph.getNode(literal) == null) {
+//                    Node node = graph.addNode(literal);
+//                    node.setAttribute("ui.label", literal);
+//
+//                    // POSICIÓN MANUAL para evitar el problema del layout
+//                    node.setAttribute("x", posX);
+//                    node.setAttribute("y", posY);
+//                    node.setAttribute("z", 0);
+//
+//                    posX += 2; // Espaciar horizontalmente
+//                    if (posX > 6) {
+//                        posX = 0;
+//                        posY += 2;
+//                    }
+//                }
+//            }
+//
+//            // Crear aristas de implicación
+//            int aristasCreadas = 0;
+//            for (Clausula c : clausulas) {
+//                if (!c.esUnitaria()) {
+//                    // Para cláusula (A ∨ B), crear: ¬A → B y ¬B → A
+//                    String arista1 = crearAristaImplicacion(graph, c.literal1, c.literal2);
+//                    String arista2 = crearAristaImplicacion(graph, c.literal2, c.literal1);
+//
+//                    if (arista1 != null) aristasCreadas++;
+//                    if (arista2 != null) aristasCreadas++;
+//
+//                    System.out.println("Cláusula " + c + " → " + arista1 + " y " + arista2);
+//                }
+//            }
+//
+//            System.out.println("Grafo creado: " + graph.getNodeCount() + " nodos, " + aristasCreadas + " aristas");
+//
+//            // Mostrar el grafo SIN layout automático
+//            Viewer viewer = graph.display();
+//            viewer.disableAutoLayout(); // IMPORTANTE: Deshabilitar layout automático
+//
+//        } catch (Exception e) {
+//            System.out.println("Error al crear gráfico: " + e.getMessage());
+//            System.out.println("Mostrando representación textual en su lugar:");
+//            mostrarGrafoTexto(clausulas);
+//        }
+//    }
 
-            graph.setAttribute("ui.stylesheet",
-                    "graph { fill-color: white; }" +                    // FONDO BLANCO
-                            "node { fill-color: black; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" +  // NODO NEGRO, TEXTO BLANCO
-                            "edge { fill-color: red; arrow-size: 20px, 8px; }"); // ARISTAS ROJAS
+// metodo SIMPLE PARA GRAFICAR LAS IMPLICACIONES - VERSIÓN CORREGIDA
+public static void graficarImplicaciones(Set<Clausula> clausulas) {
+    System.out.println("\n=== CREANDO GRÁFICO DE IMPLICACIONES ===");
 
-            // DESHABILITAR LAYOUT AUTOMÁTICO
-            graph.setAttribute("layout.quality", 0);
-            graph.setAttribute("ui.quality");
+    try {
+        System.setProperty("org.graphstream.ui", "swing");
+        Graph graph = new SingleGraph("Implicaciones Lógicas");
 
-            Set<String> literalesUnicos = new HashSet<>();
+        graph.setAttribute("ui.stylesheet",
+                "graph { fill-color: white; }" +                    // FONDO BLANCO
+                        "node { fill-color: black; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" +  // NODO NEGRO, TEXTO BLANCO
+                        "edge { fill-color: red; arrow-size: 20px, 8px; }"); // ARISTAS ROJAS
 
-            // Primero recolectar todos los literales únicos
-            for (Clausula c : clausulas) {
-                if (!c.esUnitaria()) {
-                    literalesUnicos.add(c.literal1);
-                    literalesUnicos.add(c.literal2);
-                    // También agregar sus complementos
-                    literalesUnicos.add(obtenerComplemento(c.literal1));
-                    literalesUnicos.add(obtenerComplemento(c.literal2));
-                }
+        // DESHABILITAR LAYOUT AUTOMÁTICO
+        graph.setAttribute("layout.quality", 0);
+        graph.setAttribute("ui.quality");
+
+        Set<String> literalesUnicos = new HashSet<>();
+
+        // Primero recolectar todos los literales únicos
+        for (Clausula c : clausulas) {
+            if (!c.esUnitaria()) {
+                literalesUnicos.add(c.literal1);
+                literalesUnicos.add(c.literal2);
+                // También agregar sus complementos
+                literalesUnicos.add(obtenerComplemento(c.literal1));
+                literalesUnicos.add(obtenerComplemento(c.literal2));
             }
-
-            // Crear nodos con POSICIÓN MANUAL
-            int posX = 0;
-            int posY = 0;
-            List<String> listaLiterales = new ArrayList<>(literalesUnicos);
-            Collections.sort(listaLiterales);
-
-            for (String literal : listaLiterales) {
-                if (graph.getNode(literal) == null) {
-                    Node node = graph.addNode(literal);
-                    node.setAttribute("ui.label", literal);
-
-                    // POSICIÓN MANUAL para evitar el problema del layout
-                    node.setAttribute("x", posX);
-                    node.setAttribute("y", posY);
-                    node.setAttribute("z", 0);
-
-                    posX += 2; // Espaciar horizontalmente
-                    if (posX > 6) {
-                        posX = 0;
-                        posY += 2;
-                    }
-                }
-            }
-
-            // Crear aristas de implicación
-            int aristasCreadas = 0;
-            for (Clausula c : clausulas) {
-                if (!c.esUnitaria()) {
-                    // Para cláusula (A ∨ B), crear: ¬A → B y ¬B → A
-                    String arista1 = crearAristaImplicacion(graph, c.literal1, c.literal2);
-                    String arista2 = crearAristaImplicacion(graph, c.literal2, c.literal1);
-
-                    if (arista1 != null) aristasCreadas++;
-                    if (arista2 != null) aristasCreadas++;
-
-                    System.out.println("Cláusula " + c + " → " + arista1 + " y " + arista2);
-                }
-            }
-
-            System.out.println("Grafo creado: " + graph.getNodeCount() + " nodos, " + aristasCreadas + " aristas");
-
-            // Mostrar el grafo SIN layout automático
-            Viewer viewer = graph.display();
-            viewer.disableAutoLayout(); // IMPORTANTE: Deshabilitar layout automático
-
-        } catch (Exception e) {
-            System.out.println("Error al crear gráfico: " + e.getMessage());
-            System.out.println("Mostrando representación textual en su lugar:");
-            mostrarGrafoTexto(clausulas);
         }
+
+        // Crear nodos con POSICIÓN MANUAL
+        int posX = 0;
+        int posY = 0;
+        List<String> listaLiterales = new ArrayList<>(literalesUnicos);
+        Collections.sort(listaLiterales);
+
+        for (String literal : listaLiterales) {
+            if (graph.getNode(literal) == null) {
+                Node node = graph.addNode(literal);
+                node.setAttribute("ui.label", literal);
+
+                // POSICIÓN MANUAL para evitar el problema del layout
+                node.setAttribute("x", posX);
+                node.setAttribute("y", posY);
+                node.setAttribute("z", 0);
+
+                posX += 2; // Espaciar horizontalmente
+                if (posX > 6) {
+                    posX = 0;
+                    posY += 2;
+                }
+            }
+        }
+
+        // Crear aristas de implicación
+        int aristasCreadas = 0;
+        for (Clausula c : clausulas) {
+            if (!c.esUnitaria()) {
+                // Para cláusula (A ∨ B), crear: ¬A → B y ¬B → A
+                String arista1 = crearAristaImplicacion(graph, c.literal1, c.literal2);
+                String arista2 = crearAristaImplicacion(graph, c.literal2, c.literal1);
+
+                if (arista1 != null) aristasCreadas++;
+                if (arista2 != null) aristasCreadas++;
+
+                System.out.println("Cláusula " + c + " → " + arista1 + " y " + arista2);
+            }
+        }
+
+        System.out.println("Grafo creado: " + graph.getNodeCount() + " nodos, " + aristasCreadas + " aristas");
+
+        // Mostrar el grafo SIN layout automático
+        Viewer viewer = graph.display();
+        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY); // ← SOLUCIÓN
+        viewer.disableAutoLayout();
+
+    } catch (Exception e) {
+        System.out.println("Error al crear gráfico: " + e.getMessage());
+        System.out.println("Mostrando representación textual en su lugar:");
+        mostrarGrafoTexto(clausulas);
     }
+}
 
     // Método auxiliar para crear una arista de implicación
     private static String crearAristaImplicacion(Graph graph, String literalA, String literalB) {
@@ -357,7 +440,7 @@ public class ConversorClausulas {
 
             // Verificar si esta asignación satisface todas las cláusulas
             if (esSatisfacible(clausulas, asignacion)) {
-                System.out.println("✅ ¡SATISFACIBLE!");
+                System.out.println("¡SATISFACIBLE!");
                 System.out.println("Asignación que satisface:");
                 for (Map.Entry<String, Boolean> entry : asignacion.entrySet()) {
                     System.out.println("  " + entry.getKey() + " = " + entry.getValue());
@@ -366,12 +449,12 @@ public class ConversorClausulas {
             }
         }
 
-        System.out.println("❌ NO SATISFACIBLE");
+        System.out.println("NO SATISFACIBLE");
         System.out.println("No existe asignación que satisfaga todas las cláusulas");
         return false;
     }
 
-    // Método auxiliar para extraer el nombre de la variable (sin el negativo)
+    // metodo auxiliar para extraer el nombre de la variable (sin el negativo)
     private static String extraerVariable(String literal) {
         if (literal.startsWith("-")) {
             return literal.substring(1);
@@ -379,7 +462,7 @@ public class ConversorClausulas {
         return literal;
     }
 
-    // Método auxiliar para evaluar una cláusula con una asignación dada
+    // metodo auxiliar para evaluar una cláusula con una asignación dada
     private static boolean evaluarClausula(Clausula c, Map<String, Boolean> asignacion) {
         if (c.esUnitaria()) {
             // Cláusula unitaria: (A)
@@ -406,7 +489,7 @@ public class ConversorClausulas {
         }
     }
 
-    // Método auxiliar para verificar si una asignación satisface todas las cláusulas
+    // metodo auxiliar para verificar si una asignación satisface todas las cláusulas
     private static boolean esSatisfacible(Set<Clausula> clausulas, Map<String, Boolean> asignacion) {
         for (Clausula c : clausulas) {
             if (!evaluarClausula(c, asignacion)) {
@@ -416,6 +499,89 @@ public class ConversorClausulas {
         return true;
     }
 
+    // === AGREGA ESTOS MÉTODOS AL FINAL DE TU CLASE ConversorClausulas ===
 
+    public static void calcularClausurasTransitivas(Set<Par> relacion) {
+        System.out.println("\n=== CLAUSURAS TRANSITIVAS POR RESOLUCIÓN ===");
+
+        Set<Clausula> clausulas = convertirRelacionAClausulas(relacion);
+
+        // Obtener todos los literales únicos
+        Set<String> todosLiterales = new HashSet<>();
+        for (Clausula c : clausulas) {
+            if (!c.esUnitaria()) {
+                todosLiterales.add(c.literal1);
+                todosLiterales.add(c.literal2);
+                todosLiterales.add(obtenerComplemento(c.literal1));
+                todosLiterales.add(obtenerComplemento(c.literal2));
+            } else {
+                todosLiterales.add(c.literal1);
+                todosLiterales.add(obtenerComplemento(c.literal1));
+            }
+        }
+
+        // Calcular clausura para cada literal
+        List<String> listaLiterales = new ArrayList<>(todosLiterales);
+        Collections.sort(listaLiterales);
+
+        for (String literal : listaLiterales) {
+            if (!literal.startsWith("-")) { // Solo calcular para literales positivos para evitar duplicados
+                Set<String> clausuraPositivo = calcularClausuraLiteral(literal, clausulas);
+                Set<String> clausuraNegativo = calcularClausuraLiteral("-" + literal, clausulas);
+
+                System.out.println("T(" + literal + ") = " + clausuraPositivo);
+                System.out.println("T(-" + literal + ") = " + clausuraNegativo);
+
+                // Verificar inconsistencias
+                verificarInconsistencias(clausuraPositivo, literal);
+                verificarInconsistencias(clausuraNegativo, "-" + literal);
+                System.out.println(); // Línea en blanco para separar
+            }
+        }
+    }
+
+    public static Set<String> calcularClausuraLiteral(String literalInicial, Set<Clausula> clausulas) {
+        Set<String> clausura = new HashSet<>();
+        clausura.add(literalInicial);
+
+        boolean cambio;
+        do {
+            cambio = false;
+            Set<String> nuevosLiterales = new HashSet<>();
+
+            // Aplicar resolución unitaria con todos los literales actuales
+            for (String literal : clausura) {
+                for (Clausula c : clausulas) {
+                    if (!c.esUnitaria()) {
+                        // Si tenemos ¬A y la cláusula (A ∨ B), entonces podemos derivar B
+                        String complemento = obtenerComplemento(literal);
+
+                        if (c.literal1.equals(complemento) && !clausura.contains(c.literal2)) {
+                            nuevosLiterales.add(c.literal2);
+                            cambio = true;
+                        }
+                        if (c.literal2.equals(complemento) && !clausura.contains(c.literal1)) {
+                            nuevosLiterales.add(c.literal1);
+                            cambio = true;
+                        }
+                    }
+                }
+            }
+
+            clausura.addAll(nuevosLiterales);
+
+        } while (cambio);
+
+        return clausura;
+    }
+
+    private static void verificarInconsistencias(Set<String> clausura, String literal) {
+        for (String l : clausura) {
+            String complemento = obtenerComplemento(l);
+            if (clausura.contains(complemento)) {
+                System.out.println("   ⚠️  INCONSISTENCIA en T(" + literal + "): contiene " + l + " y " + complemento);
+            }
+        }
+    }
 
 }
