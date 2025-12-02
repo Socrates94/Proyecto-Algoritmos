@@ -10,17 +10,20 @@ public class ConversorClausulas {
 
     // Clase para representar cualquier cláusula (unitaria o binaria)
     public static class Clausula {
+
         String literal1;
         String literal2;  // Puede ser null para cláusulas unitarias
 
+        //clausula unaria
         public Clausula(String lit1) {
             this.literal1 = lit1;
-            this.literal2 = null;  // Cláusula unitaria
+            this.literal2 = null;
         }
 
+        //clausula binaria
         public Clausula(String lit1, String lit2) {
             this.literal1 = lit1;
-            this.literal2 = lit2;  // Cláusula binaria
+            this.literal2 = lit2;
         }
 
         public boolean esUnitaria() {
@@ -36,6 +39,7 @@ public class ConversorClausulas {
             }
         }
 
+        //para comparar los objetos si son diferentes en memoria
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
@@ -53,6 +57,7 @@ public class ConversorClausulas {
             return false;
         }
 
+        //para trabajar con estructuras como hashset o hashmap
         @Override
         public int hashCode() {
             if (esUnitaria()) {
@@ -63,11 +68,12 @@ public class ConversorClausulas {
         }
     }
 
-    // Convierte una relación en cláusulas (unitarias y binarias)
+    //convertir la relacion en cláusulas unarias y binarias
     public static Set<Clausula> convertirRelacionAClausulas(Set<Par> relacion) {
         Set<Clausula> clausulas = new HashSet<>();
 
         for (Par par : relacion) {
+
             if (par.y == null) {
                 // CASO 1: Par individual (x) - CLAÚSULA UNITARIA
                 // (x) representa reflexividad: x debe ser verdadero
@@ -91,14 +97,16 @@ public class ConversorClausulas {
                 System.out.println("  -" + par.x + " → " + par.y + " ≡ " + xPositivo + " ∨ " + yPositivo);
                 System.out.println("  -" + par.y + " → " + par.x + " ≡ " + yPositivo + " ∨ " + xPositivo);
             }
-        }
 
+        }
+        System.out.println("\n");
         return clausulas;
     }
 
-    // Método para mostrar las cláusulas de forma organizada
+    //metodo para mostrar las cláusulas de forma organizada
     public static void mostrarClausulas(Set<Clausula> clausulas) {
-        System.out.println("\n=== CLAÚSULAS GENERADAS ===");
+        System.out.println("\n=====================================================");
+        System.out.println("=== CLAÚSULAS GENERADAS ===");
 
         // Separar cláusulas unitarias y binarias
         List<Clausula> unitarias = new ArrayList<>();
@@ -121,7 +129,7 @@ public class ConversorClausulas {
 
         // Mostrar cláusulas unitarias
         if (!unitarias.isEmpty()) {
-            System.out.println("\nCláusulas Unitarias:");
+            System.out.println("Cláusulas Unitarias:");
             for (int i = 0; i < unitarias.size(); i++) {
                 System.out.println("U" + (i+1) + ": " + unitarias.get(i));
             }
@@ -129,120 +137,31 @@ public class ConversorClausulas {
 
         // Mostrar cláusulas binarias
         if (!binarias.isEmpty()) {
-            System.out.println("\nCláusulas Binarias:");
+            System.out.println("Cláusulas Binarias:");
             for (int i = 0; i < binarias.size(); i++) {
                 System.out.println("C" + (i+1) + ": " + binarias.get(i));
             }
         }
 
-        System.out.println("\nTotal: " + unitarias.size() + " unitarias, " +
+        System.out.println("Total: " + unitarias.size() + " unitarias, " +
                 binarias.size() + " binarias");
+        System.out.println("=====================================================\n");
     }
 
-    // metodo SIMPLE PARA GRAFICAR LAS IMPLICACIONES - VERSIÓN CORREGIDA
-//    public static void graficarImplicaciones(Set<Clausula> clausulas) {
-//
-//        System.out.println("\n=== CREANDO GRÁFICO DE IMPLICACIONES ===");
-//
-//        try {
-//            System.setProperty("org.graphstream.ui", "swing");
-//            Graph graph = new SingleGraph("Implicaciones Lógicas");
-//
-//            // ESTILO MEJORADO - Deshabilitar layout automático
-////            graph.setAttribute("ui.stylesheet",
-////                    "node { fill-color: blue; size: 30px; text-mode: normal; text-size: 18; }" +
-////                            "edge { fill-color: red; arrow-size: 20px, 8px; }");
-////            graph.setAttribute("ui.stylesheet",
-////                    "graph { fill-color: black; }" +
-////                            "node { fill-color: white; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" +
-////                            "edge { fill-color: red; arrow-size: 20px, 8px; }");
-//
-//            graph.setAttribute("ui.stylesheet",
-//                    "graph { fill-color: white; }" +                    // FONDO BLANCO
-//                            "node { fill-color: black; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" +  // NODO NEGRO, TEXTO BLANCO
-//                            "edge { fill-color: red; arrow-size: 20px, 8px; }"); // ARISTAS ROJAS
-//
-//            // DESHABILITAR LAYOUT AUTOMÁTICO
-//            graph.setAttribute("layout.quality", 0);
-//            graph.setAttribute("ui.quality");
-//
-//            Set<String> literalesUnicos = new HashSet<>();
-//
-//            // Primero recolectar todos los literales únicos
-//            for (Clausula c : clausulas) {
-//                if (!c.esUnitaria()) {
-//                    literalesUnicos.add(c.literal1);
-//                    literalesUnicos.add(c.literal2);
-//                    // También agregar sus complementos
-//                    literalesUnicos.add(obtenerComplemento(c.literal1));
-//                    literalesUnicos.add(obtenerComplemento(c.literal2));
-//                }
-//            }
-//
-//            // Crear nodos con POSICIÓN MANUAL
-//            int posX = 0;
-//            int posY = 0;
-//            List<String> listaLiterales = new ArrayList<>(literalesUnicos);
-//            Collections.sort(listaLiterales);
-//
-//            for (String literal : listaLiterales) {
-//                if (graph.getNode(literal) == null) {
-//                    Node node = graph.addNode(literal);
-//                    node.setAttribute("ui.label", literal);
-//
-//                    // POSICIÓN MANUAL para evitar el problema del layout
-//                    node.setAttribute("x", posX);
-//                    node.setAttribute("y", posY);
-//                    node.setAttribute("z", 0);
-//
-//                    posX += 2; // Espaciar horizontalmente
-//                    if (posX > 6) {
-//                        posX = 0;
-//                        posY += 2;
-//                    }
-//                }
-//            }
-//
-//            // Crear aristas de implicación
-//            int aristasCreadas = 0;
-//            for (Clausula c : clausulas) {
-//                if (!c.esUnitaria()) {
-//                    // Para cláusula (A ∨ B), crear: ¬A → B y ¬B → A
-//                    String arista1 = crearAristaImplicacion(graph, c.literal1, c.literal2);
-//                    String arista2 = crearAristaImplicacion(graph, c.literal2, c.literal1);
-//
-//                    if (arista1 != null) aristasCreadas++;
-//                    if (arista2 != null) aristasCreadas++;
-//
-//                    System.out.println("Cláusula " + c + " → " + arista1 + " y " + arista2);
-//                }
-//            }
-//
-//            System.out.println("Grafo creado: " + graph.getNodeCount() + " nodos, " + aristasCreadas + " aristas");
-//
-//            // Mostrar el grafo SIN layout automático
-//            Viewer viewer = graph.display();
-//            viewer.disableAutoLayout(); // IMPORTANTE: Deshabilitar layout automático
-//
-//        } catch (Exception e) {
-//            System.out.println("Error al crear gráfico: " + e.getMessage());
-//            System.out.println("Mostrando representación textual en su lugar:");
-//            mostrarGrafoTexto(clausulas);
-//        }
-//    }
 
-// metodo SIMPLE PARA GRAFICAR LAS IMPLICACIONES - VERSIÓN CORREGIDA
+//metodo SIMPLE PARA GRAFICAR LAS IMPLICACIONES - VERSIÓN CORREGIDA
 public static void graficarImplicaciones(Set<Clausula> clausulas) {
-    System.out.println("\n=== CREANDO GRÁFICO DE IMPLICACIONES ===");
+    System.out.println("\n=====================================================");
+    System.out.println("=== CREANDO GRÁFICO DE IMPLICACIONES ===");
 
     try {
         System.setProperty("org.graphstream.ui", "swing");
         Graph graph = new SingleGraph("Implicaciones Lógicas");
 
         graph.setAttribute("ui.stylesheet",
-                "graph { fill-color: white; }" +                    // FONDO BLANCO
-                        "node { fill-color: black; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" +  // NODO NEGRO, TEXTO BLANCO
-                        "edge { fill-color: red; arrow-size: 20px, 8px; }"); // ARISTAS ROJAS
+                "graph { fill-color: white; }" +
+                        "node { fill-color: black; size: 30px; text-mode: normal; text-size: 18; text-color: white; }" + //nodo negro, letra blanca
+                        "edge { fill-color: red; arrow-size: 20px, 8px; }"); //aristas rojas
 
         // DESHABILITAR LAYOUT AUTOMÁTICO
         graph.setAttribute("layout.quality", 0);
@@ -312,9 +231,10 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
         System.out.println("Mostrando representación textual en su lugar:");
         mostrarGrafoTexto(clausulas);
     }
+    System.out.println("=====================================================\n");
 }
 
-    // Método auxiliar para crear una arista de implicación
+    //metodo auxiliar para crear una arista de implicación
     private static String crearAristaImplicacion(Graph graph, String literalA, String literalB) {
         String desde = obtenerComplemento(literalA);
         String hacia = literalB;
@@ -332,7 +252,7 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
         return null;
     }
 
-    // Método auxiliar para obtener complemento
+    //metodo auxiliar para obtener complemento
     private static String obtenerComplemento(String literal) {
         if (literal.startsWith("-")) {
             return literal.substring(1);
@@ -341,7 +261,7 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
         }
     }
 
-    // Método de respaldo para mostrar el grafo en texto
+    //metodo de respaldo para mostrar el grafo en texto
     private static void mostrarGrafoTexto(Set<Clausula> clausulas) {
         System.out.println("\n=== REPRESENTACIÓN TEXTUAL DEL GRAFO ===");
 
@@ -370,9 +290,10 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
         }
     }
 
-    // Procesar y mostrar todo INCLUYENDO GRÁFICO
+    //procesar y mostrar todo incluyendo el grafo
     public static void procesarYMostrarClausulas(Set<Par> relacion) {
-        System.out.println("\n=== CONVERSIÓN A LÓGICA PROPOSICIONAL ===");
+        System.out.println("\n=====================================================");
+        System.out.println("=== CONVERSIÓN A LÓGICA PROPOSICIONAL ===");
         System.out.println("Relación original: " + relacion);
 
         Set<Clausula> clausulas = convertirRelacionAClausulas(relacion);
@@ -383,11 +304,13 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
 
         // MOSTRAR GRÁFICO
         graficarImplicaciones(clausulas);
+
     }
 
     // Análisis adicional de lo que significan las cláusulas
     public static void analizarImplicaciones(Set<Clausula> clausulas) {
-        System.out.println("\n=== ANÁLISIS DE IMPLICACIONES ===");
+        System.out.println("\n=====================================================");
+        System.out.println("=== ANÁLISIS DE IMPLICACIONES ===");
 
         for (Clausula c : clausulas) {
             if (c.esUnitaria()) {
@@ -399,12 +322,13 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
                         "(¬" + c.literal2 + " → " + c.literal1 + ")");
             }
         }
+        System.out.println("=====================================================\n");
     }
 
-    // En tu clase ConversorClausulas.java, agrega este método:
-
+    // En tu clase ConversorClausulas.java, agrega este metodo:
     public static boolean resolver2SAT(Set<Par> relacion) {
-        System.out.println("\n=== RESOLUCIÓN 2-SAT ===");
+        System.out.println("\n=====================================================");
+        System.out.println("=== RESOLUCIÓN 2-SAT ===");
 
         // Convertir la relación a cláusulas
         Set<Clausula> clausulas = convertirRelacionAClausulas(relacion);
@@ -451,6 +375,7 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
 
         System.out.println("NO SATISFACIBLE");
         System.out.println("No existe asignación que satisfaga todas las cláusulas");
+        System.out.println("=====================================================\n");
         return false;
     }
 
@@ -499,10 +424,10 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
         return true;
     }
 
-    // === AGREGA ESTOS MÉTODOS AL FINAL DE TU CLASE ConversorClausulas ===
-
+    //metodos para inconsistencia
     public static void calcularClausurasTransitivas(Set<Par> relacion) {
-        System.out.println("\n=== CLAUSURAS TRANSITIVAS POR RESOLUCIÓN ===");
+        System.out.println("\n=====================================================");
+        System.out.println("=== CLAUSURAS TRANSITIVAS POR RESOLUCIÓN ===");
 
         Set<Clausula> clausulas = convertirRelacionAClausulas(relacion);
 
@@ -525,7 +450,9 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
         Collections.sort(listaLiterales);
 
         for (String literal : listaLiterales) {
-            if (!literal.startsWith("-")) { // Solo calcular para literales positivos para evitar duplicados
+
+            if (!literal.startsWith("-")) {
+                // Solo calcular para literales positivos para evitar duplicados
                 Set<String> clausuraPositivo = calcularClausuraLiteral(literal, clausulas);
                 Set<String> clausuraNegativo = calcularClausuraLiteral("-" + literal, clausulas);
 
@@ -537,7 +464,9 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
                 verificarInconsistencias(clausuraNegativo, "-" + literal);
                 System.out.println(); // Línea en blanco para separar
             }
+
         }
+        System.out.println("=====================================================\n");
     }
 
     public static Set<String> calcularClausuraLiteral(String literalInicial, Set<Clausula> clausulas) {
@@ -576,12 +505,14 @@ public static void graficarImplicaciones(Set<Clausula> clausulas) {
     }
 
     private static void verificarInconsistencias(Set<String> clausura, String literal) {
+
         for (String l : clausura) {
             String complemento = obtenerComplemento(l);
             if (clausura.contains(complemento)) {
-                System.out.println("   ⚠️  INCONSISTENCIA en T(" + literal + "): contiene " + l + " y " + complemento);
+                System.out.println("   X  INCONSISTENCIA en T(" + literal + "): contiene " + l + " y " + complemento);
             }
         }
+
     }
 
 }

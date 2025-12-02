@@ -34,7 +34,7 @@ public class ClausuraTransitivaReflexiva {
                 continue; // Si estás en un loop, volver al inicio
 
             }
-
+            //ingresa los elementos del conjunto, los valida y construye la relacion que tambien se valida correctametne
             switch (opc){
                 case 1:
 
@@ -89,45 +89,44 @@ public class ClausuraTransitivaReflexiva {
                             String[] partes = input.split(",");
                             Par nuevoPar = null;
 
-                            // --- CASO 1: Solo un elemento (ej: "-3") ---
+                            //caso 1: par con una literal
                             if (partes.length == 1) {
-                                // Evitar entradas vacías si el usuario solo da Enter
+                                //evitar entradas vacías si el usuario solo da Enter
                                 if(partes[0].trim().isEmpty()) continue;
 
                                 int x = Integer.parseInt(partes[0].trim());
 
-                                // Validar que 'x' exista en el conjunto universo
+                                //validar que 'x' exista en el conjunto universo
                                 if (!conjunto.contains(x)) {
                                     System.out.println("Error: El elemento " + x + " no existe en el conjunto definido previamente.");
                                     continue;
                                 }
 
-                                // Usamos el constructor nuevo de un solo argumento
+                                //usamos el constructor nuevo de un solo argumento
                                 nuevoPar = new Par(x);
 
-                                // --- CASO 2: Un par completo (ej: "1,2") ---
+                                //caso 2: par con dos literales
                             } else if (partes.length == 2) {
                                 int x = Integer.parseInt(partes[0].trim());
                                 int y = Integer.parseInt(partes[1].trim());
 
-                                // Validar que AMBOS existan en el conjunto universo
+                                //validar que AMBOS existan en el conjunto universo
                                 if (!conjunto.contains(x) || !conjunto.contains(y)) {
                                     System.out.println("Error: Ambos elementos deben estar en el conjunto definido.");
                                     continue;
                                 }
 
-                                // Usamos el constructor original de dos argumentos
+                                //usamos el constructor original de dos argumentos
                                 nuevoPar = new Par(x, y);
 
                             } else {
-                                // Si meten "1,2,3" u otro formato raro
+                                //si meten "1,2,3" u otro formato raro
                                 System.out.println("Formato incorrecto. Use: 'x,y' o solo 'x'");
                                 continue;
                             }
 
-                            // --- AÑADIR A LA RELACIÓN (Común para ambos casos) ---
+                            //agregar a la relacion (Común para ambos casos)
                             if (relacion.add(nuevoPar)) {
-                                // Gracias a tu toString mejorado, se imprimirá bonito: (-3) o (1,2)
                                 System.out.print(" | " + nuevoPar + " agregado.");
                             } else {
                                 System.out.print(" | " + nuevoPar + " ya existe en la relación.");
@@ -140,17 +139,18 @@ public class ClausuraTransitivaReflexiva {
                         }
                     }
 
-                    //in.close();
                     // Mostrar resultados
-                    System.out.println("\n=== RESULTADOS ===");
+                    System.out.println("\n=======================================================");
+                    System.out.println("=== RESULTADOS ===");
                     System.out.println("Conjunto: " + conjunto);
                     System.out.println("Relación: " + relacion);
+                    System.out.println("=======================================================\n");
 
                     if (relacion.isEmpty()) {
                         System.out.println("\nLA RELACION ESTA VACIA:");
-
                     }
 
+                    //1. conversion de clausulas
                     ConversorClausulas.procesarYMostrarClausulas(relacion);
 
                     calcularClausura(relacion);
@@ -175,9 +175,13 @@ public class ClausuraTransitivaReflexiva {
                     relacion.clear();
 
                     break;
+
                 case 2:
                     System.out.println("Nos vemos pronto...");
+                    System.out.println("Programa terminado.");
+                    System.exit(0);
                     break;
+
                 default:
                     System.out.println("Seleccione una opcion del menu...");
             }
@@ -225,7 +229,8 @@ public class ClausuraTransitivaReflexiva {
         }
 
         // Mostrar matriz inicial
-        System.out.println("\n=== MATRIZ INICIAL ===");
+        System.out.println("\n=====================================================");
+        System.out.println("=== MATRIZ INICIAL ===");
         mostrarMatriz(A, listaElementos);
 
         // **MEJORA: Warshall mejorado con mensajes de progreso**
@@ -245,23 +250,7 @@ public class ClausuraTransitivaReflexiva {
             }
         }
 
-//        Set<Par> clausura = new HashSet<>();
-//        for (int i = 0; i < n; i++) {
-//            for (int j = 0; j < n; j++) {
-//                if (clausuraMatriz[i][j]) {
-//                    clausura.add(new Par(listaElementos.get(i), listaElementos.get(j)));
-//                }
-//            }
-//        }
-
-//        // **NUEVO: Visualización**
-//        try {
-//            VisualizadorGrafo.visualizarRelacion(relacion, clausura, "Warshall Algorithm");
-//        } catch (Exception e) {
-//            System.out.println("Error en visualización: " + e.getMessage());
-//            System.out.println("Pero el cálculo de la clausura se completó correctamente.");
-//        }
-
+        System.out.println("=====================================================\n");
         return clausura;
     }
 
@@ -308,7 +297,7 @@ public class ClausuraTransitivaReflexiva {
                 }
             }
         }
-
+        System.out.println("\n");
         return R;
     }
 

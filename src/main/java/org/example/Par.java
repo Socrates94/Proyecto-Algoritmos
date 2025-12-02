@@ -3,12 +3,14 @@ package org.example;
 import java.util.Objects;
 
 public class Par {
+
     Integer x;
     Integer y;
 
+
     public Par(Integer x) {
         this.x = x;
-        this.y = null; // Representa par reflexivo (x,x)
+        this.y = null;
     }
 
     public Par(Integer x, Integer y) {
@@ -16,6 +18,7 @@ public class Par {
         this.y = y;
     }
 
+    //Para comparar los objetos si son diferentes en memoria
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -28,6 +31,7 @@ public class Par {
         return Objects.equals(x, par.x) && Objects.equals(y, par.y);
     }
 
+    //Para trabajar estructuras hashset o hashmap
     @Override
     public int hashCode() {
         if (y == null) {
