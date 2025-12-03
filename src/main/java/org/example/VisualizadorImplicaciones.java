@@ -132,12 +132,23 @@ public class VisualizadorImplicaciones extends JPanel {
                 Point p2 = posiciones.get(destino);
                 if (p2 == null) continue;
 
-                // Color según tipo de implicación
+//                // Color según tipo de implicación
+//                if (entry.getKey().startsWith("-")) {
+//                    g2d.setColor(new Color(200, 0, 0, 180)); // Rojo semitransparente
+//                } else {
+//                    g2d.setColor(new Color(0, 100, 0, 180)); // Verde semitransparente
+//                }
+
+                // En el metodo paintComponent, modifica la parte donde dibujas las aristas:
+// Reemplaza la parte del color por esto:
                 if (entry.getKey().startsWith("-")) {
-                    g2d.setColor(new Color(200, 0, 0, 180)); // Rojo semitransparente
+                    g2d.setColor(new Color(200, 0, 0, 220)); // Rojo más opaco
                 } else {
-                    g2d.setColor(new Color(0, 100, 0, 180)); // Verde semitransparente
+                    g2d.setColor(new Color(0, 100, 0, 220)); // Verde más opaco
                 }
+
+// Aumenta el grosor de la línea para mejor visibilidad
+                g2d.setStroke(new BasicStroke(2.0f));
 
                 dibujarFlecha(g2d, p1.x, p1.y, p2.x, p2.y);
             }
@@ -175,35 +186,35 @@ public class VisualizadorImplicaciones extends JPanel {
         dibujarLeyenda(g2d);
     }
 
-    private void dibujarFlecha(Graphics2D g2d, int x1, int y1, int x2, int y2) {
-        // Calcular punto de control para curva
-        int cx = (x1 + x2) / 2;
-        int cy = (y1 + y2) / 2;
-
-        // Desplazar para curva
-        double angulo = Math.atan2(y2 - y1, x2 - x1);
-        int desplazamiento = 30;
-        cx += (int)(desplazamiento * Math.cos(angulo + Math.PI/2));
-        cy += (int)(desplazamiento * Math.sin(angulo + Math.PI/2));
-
-        // Dibujar curva
-        g2d.draw(new java.awt.geom.QuadCurve2D.Float(x1, y1, cx, cy, x2, y2));
-
-        // Flecha al final
-        double anguloFlecha = Math.atan2(y2 - cy, x2 - cx);
-        int tamañoFlecha = 12;
-
-        int x3 = (int)(x2 - tamañoFlecha * Math.cos(anguloFlecha - Math.PI/6));
-        int y3 = (int)(y2 - tamañoFlecha * Math.sin(anguloFlecha - Math.PI/6));
-        int x4 = (int)(x2 - tamañoFlecha * Math.cos(anguloFlecha + Math.PI/6));
-        int y4 = (int)(y2 - tamañoFlecha * Math.sin(anguloFlecha + Math.PI/6));
-
-        g2d.fillPolygon(
-                new int[]{x2, x3, x4},
-                new int[]{y2, y3, y4},
-                3
-        );
-    }
+//    private void dibujarFlecha(Graphics2D g2d, int x1, int y1, int x2, int y2) {
+//        // Calcular punto de control para curva
+//        int cx = (x1 + x2) / 2;
+//        int cy = (y1 + y2) / 2;
+//
+//        // Desplazar para curva
+//        double angulo = Math.atan2(y2 - y1, x2 - x1);
+//        int desplazamiento = 30;
+//        cx += (int)(desplazamiento * Math.cos(angulo + Math.PI/2));
+//        cy += (int)(desplazamiento * Math.sin(angulo + Math.PI/2));
+//
+//        // Dibujar curva
+//        g2d.draw(new java.awt.geom.QuadCurve2D.Float(x1, y1, cx, cy, x2, y2));
+//
+//        // Flecha al final
+//        double anguloFlecha = Math.atan2(y2 - cy, x2 - cx);
+//        int tamañoFlecha = 12;
+//
+//        int x3 = (int)(x2 - tamañoFlecha * Math.cos(anguloFlecha - Math.PI/6));
+//        int y3 = (int)(y2 - tamañoFlecha * Math.sin(anguloFlecha - Math.PI/6));
+//        int x4 = (int)(x2 - tamañoFlecha * Math.cos(anguloFlecha + Math.PI/6));
+//        int y4 = (int)(y2 - tamañoFlecha * Math.sin(anguloFlecha + Math.PI/6));
+//
+//        g2d.fillPolygon(
+//                new int[]{x2, x3, x4},
+//                new int[]{y2, y3, y4},
+//                3
+//        );
+//    }
 
     private void dibujarLeyenda(Graphics2D g2d) {
         int y = 550;
@@ -244,4 +255,84 @@ public class VisualizadorImplicaciones extends JPanel {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+    private void dibujarFlecha(Graphics2D g2d, int x1, int y1, int x2, int y2) {
+        // Calcular el ángulo de la línea
+        double angle = Math.atan2(y2 - y1, x2 - x1);
+
+        // Acortar la línea para que no empiece/termine en el borde del nodo
+        int radioNodo = 25;
+        int x1a = (int)(x1 + radioNodo/2 * Math.cos(angle));
+        int y1a = (int)(y1 + radioNodo/2 * Math.sin(angle));
+        int x2a = (int)(x2 - radioNodo/2 * Math.cos(angle));
+        int y2a = (int)(y2 - radioNodo/2 * Math.sin(angle));
+
+        // Calcular punto de control para curva (si es una autorreferencia)
+        if (x1 == x2 && y1 == y2) {
+            // Caso especial: autorreferencia (bucle)
+            g2d.drawArc(x1 - radioNodo, y1 - 2*radioNodo, 2*radioNodo, 2*radioNodo, 0, 360);
+
+            // Dibujar flecha en el bucle
+            int arrowX = x1;
+            int arrowY = y1 - 2*radioNodo;
+            drawArrowHead(g2d, arrowX, arrowY, Math.PI/2);
+            return;
+        }
+
+        // Calcular punto de control para curva suave
+        double distancia = Math.sqrt(Math.pow(x2a - x1a, 2) + Math.pow(y2a - y1a, 2));
+        int desplazamiento = Math.max(20, (int)(distancia * 0.3));
+
+        int cx = (x1a + x2a) / 2;
+        int cy = (y1a + y2a) / 2;
+
+        // Perpendicular al vector dirección
+        double perpendicularAngle = angle + Math.PI/2;
+        cx += (int)(desplazamiento * Math.cos(perpendicularAngle));
+        cy += (int)(desplazamiento * Math.sin(perpendicularAngle));
+
+        // Dibujar la curva con Bezier cuadrática
+        java.awt.geom.QuadCurve2D curve = new java.awt.geom.QuadCurve2D.Float();
+        curve.setCurve(x1a, y1a, cx, cy, x2a, y2a);
+        g2d.draw(curve);
+
+        // Calcular punto en la curva cerca del final para la flecha
+        double t = 0.8; // Punto al 80% de la curva
+        double curveX = Math.pow(1-t, 2)*x1a + 2*(1-t)*t*cx + Math.pow(t, 2)*x2a;
+        double curveY = Math.pow(1-t, 2)*y1a + 2*(1-t)*t*cy + Math.pow(t, 2)*y2a;
+
+        // Derivada para la tangente
+        double dx = 2*(1-t)*(cx - x1a) + 2*t*(x2a - cx);
+        double dy = 2*(1-t)*(cy - y1a) + 2*t*(y2a - cy);
+        double tangentAngle = Math.atan2(dy, dx);
+
+        // Dibujar la flecha en el punto correcto de la curva
+        drawArrowHead(g2d, (int)curveX, (int)curveY, tangentAngle);
+    }
+
+    private void drawArrowHead(Graphics2D g2d, int x, int y, double angle) {
+        int arrowSize = 12;
+
+        // Calcular puntos de la flecha
+        int x2 = (int)(x - arrowSize * Math.cos(angle - Math.PI/6));
+        int y2 = (int)(y - arrowSize * Math.sin(angle - Math.PI/6));
+
+        int x3 = (int)(x - arrowSize * Math.cos(angle + Math.PI/6));
+        int y3 = (int)(y - arrowSize * Math.sin(angle + Math.PI/6));
+
+        // Crear polígono de flecha
+        Polygon arrowHead = new Polygon();
+        arrowHead.addPoint(x, y);
+        arrowHead.addPoint(x2, y2);
+        arrowHead.addPoint(x3, y3);
+
+        // Dibujar flecha
+        g2d.fill(arrowHead);
+        g2d.setColor(g2d.getColor().darker()); // Color más oscuro para el borde
+        g2d.draw(arrowHead);
+    }
+
+
+
 }
+
