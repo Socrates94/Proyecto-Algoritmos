@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.List;
 
 public class VisualizadorImplicaciones extends JPanel {
+
     private Set<ConversorClausulas.Clausula> clausulas;
     private Map<String, Point> posiciones;
     private Map<String, List<String>> grafo;
@@ -132,22 +133,15 @@ public class VisualizadorImplicaciones extends JPanel {
                 Point p2 = posiciones.get(destino);
                 if (p2 == null) continue;
 
-//                // Color según tipo de implicación
-//                if (entry.getKey().startsWith("-")) {
-//                    g2d.setColor(new Color(200, 0, 0, 180)); // Rojo semitransparente
-//                } else {
-//                    g2d.setColor(new Color(0, 100, 0, 180)); // Verde semitransparente
-//                }
-
                 // En el metodo paintComponent, modifica la parte donde dibujas las aristas:
-// Reemplaza la parte del color por esto:
+                // Reemplaza la parte del color por esto:
                 if (entry.getKey().startsWith("-")) {
                     g2d.setColor(new Color(200, 0, 0, 220)); // Rojo más opaco
                 } else {
                     g2d.setColor(new Color(0, 100, 0, 220)); // Verde más opaco
                 }
 
-// Aumenta el grosor de la línea para mejor visibilidad
+                // Aumenta el grosor de la línea para mejor visibilidad
                 g2d.setStroke(new BasicStroke(2.0f));
 
                 dibujarFlecha(g2d, p1.x, p1.y, p2.x, p2.y);
@@ -186,35 +180,6 @@ public class VisualizadorImplicaciones extends JPanel {
         dibujarLeyenda(g2d);
     }
 
-//    private void dibujarFlecha(Graphics2D g2d, int x1, int y1, int x2, int y2) {
-//        // Calcular punto de control para curva
-//        int cx = (x1 + x2) / 2;
-//        int cy = (y1 + y2) / 2;
-//
-//        // Desplazar para curva
-//        double angulo = Math.atan2(y2 - y1, x2 - x1);
-//        int desplazamiento = 30;
-//        cx += (int)(desplazamiento * Math.cos(angulo + Math.PI/2));
-//        cy += (int)(desplazamiento * Math.sin(angulo + Math.PI/2));
-//
-//        // Dibujar curva
-//        g2d.draw(new java.awt.geom.QuadCurve2D.Float(x1, y1, cx, cy, x2, y2));
-//
-//        // Flecha al final
-//        double anguloFlecha = Math.atan2(y2 - cy, x2 - cx);
-//        int tamañoFlecha = 12;
-//
-//        int x3 = (int)(x2 - tamañoFlecha * Math.cos(anguloFlecha - Math.PI/6));
-//        int y3 = (int)(y2 - tamañoFlecha * Math.sin(anguloFlecha - Math.PI/6));
-//        int x4 = (int)(x2 - tamañoFlecha * Math.cos(anguloFlecha + Math.PI/6));
-//        int y4 = (int)(y2 - tamañoFlecha * Math.sin(anguloFlecha + Math.PI/6));
-//
-//        g2d.fillPolygon(
-//                new int[]{x2, x3, x4},
-//                new int[]{y2, y3, y4},
-//                3
-//        );
-//    }
 
     private void dibujarLeyenda(Graphics2D g2d) {
         int y = 550;
@@ -331,8 +296,6 @@ public class VisualizadorImplicaciones extends JPanel {
         g2d.setColor(g2d.getColor().darker()); // Color más oscuro para el borde
         g2d.draw(arrowHead);
     }
-
-
 
 }
 

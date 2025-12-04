@@ -10,9 +10,10 @@ import java.util.Set;
 public class ClausuraTransitivaReflexiva {
 
     public static void inputs(){
+
         Scanner in = new Scanner(System.in);
 
-        // Conjunto
+        //conjunto
         Set<Integer> conjunto = new HashSet<>();
         Set<Par> relacion = new HashSet<>();
         int opc = 0;
@@ -30,15 +31,16 @@ public class ClausuraTransitivaReflexiva {
 
             }catch (InputMismatchException e){
                 System.out.print("FATAL ERROR: Debe ingresar un número entero de la opcion del menu. ");
-                in.nextLine(); // Limpiar el buffer
-                continue; // Si estás en un loop, volver al inicio
+                in.nextLine(); //limpiar el buffer
+                continue; //si estás en un loop, volver al inicio
 
             }
+
             //ingresa los elementos del conjunto, los valida y construye la relacion que tambien se valida correctametne
             switch (opc){
                 case 1:
 
-                    // Ingreso dinámico del conjunto
+                    //ingreso dinámico del conjunto
                     System.out.println("=== INGRESO DEL CONJUNTO ===");
                     System.out.println("Ingrese los elementos del conjunto (ingrese 'fin' para terminar).");
 
@@ -47,7 +49,6 @@ public class ClausuraTransitivaReflexiva {
                         String input = in.nextLine().trim();
 
                         if (input.equalsIgnoreCase("fin")) {
-
                             break;
                         }
 
@@ -71,7 +72,7 @@ public class ClausuraTransitivaReflexiva {
 
                     System.out.println("\nConjunto final: " + conjunto);
 
-                    // Ingreso dinámico de la relación
+                    //ingreso dinámico de la relación
                     System.out.println("\n=== INGRESO DE LA RELACIÓN ===");
                     System.out.println("Ingrese los pares de la relación (formato: 'x,y' o 'x').");
                     System.out.println("Ingrese 'fin' para terminar.\n");
@@ -85,7 +86,7 @@ public class ClausuraTransitivaReflexiva {
                         }
 
                         try {
-                            // Separamos por la coma
+                            //separamos por la coma
                             String[] partes = input.split(",");
                             Par nuevoPar = null;
 
@@ -120,7 +121,7 @@ public class ClausuraTransitivaReflexiva {
                                 nuevoPar = new Par(x, y);
 
                             } else {
-                                //si meten "1,2,3" u otro formato raro
+                                //si meten un formato que no sea x,y o x
                                 System.out.println("Formato incorrecto. Use: 'x,y' o solo 'x'");
                                 continue;
                             }
@@ -139,7 +140,7 @@ public class ClausuraTransitivaReflexiva {
                         }
                     }
 
-                    // Mostrar resultados
+                    //mostrar resultados
                     System.out.println("\n=======================================================");
                     System.out.println("=== RESULTADOS ===");
                     System.out.println("Conjunto: " + conjunto);
@@ -150,10 +151,10 @@ public class ClausuraTransitivaReflexiva {
                         System.out.println("\nLA RELACION ESTA VACIA:");
                     }
 
-                    //1. conversion de clausulas
+                    //1. Conversion de clausulas
                     ConversorClausulas.procesarYMostrarClausulas(relacion);
 
-                    calcularClausura(relacion);
+                    //calcularClausura(relacion);
 
                     // calcular clausuras transitivas (NUEVO)
                     ConversorClausulas.calcularClausurasTransitivas(relacion);
@@ -185,17 +186,19 @@ public class ClausuraTransitivaReflexiva {
                 default:
                     System.out.println("Seleccione una opcion del menu...");
             }
+
         }while(opc != 2);
 
         in.close();
     }
 
     public static Set<Par> calcularClausura(Set<Par> relacion) {
+
         if (relacion.isEmpty()) {
             return new HashSet<>();
         }
 
-        // Recolectar elementos - CORRECTO
+        //recolectar elementos
         Set<Integer> elementos = new HashSet<>();
         for (Par p : relacion) {
             elementos.add(p.x);
@@ -214,33 +217,33 @@ public class ClausuraTransitivaReflexiva {
         int n = listaElementos.size();
         boolean[][] A = new boolean[n][n];
 
-        // **MEJORA: Construir matriz inicial incluyendo reflexividad**
+        // construir matriz inicial incluyendo reflexividad
         for (Par p : relacion) {
             if (p.y != null) {
-                // Par normal (x,y)
+                //par normal (x,y)
                 int i = elementoAIndice.get(p.x);
                 int j = elementoAIndice.get(p.y);
                 A[i][j] = true;
             } else {
-                // Par reflexivo individual (x) - representa (x,x)
+                //par reflexivo individual (x) - representa (x,x)
                 int i = elementoAIndice.get(p.x);
                 A[i][i] = true;  // ← ¡IMPORTANTE! No olvidar esto
             }
         }
 
-        // Mostrar matriz inicial
+        //mostrar matriz inicial
         System.out.println("\n=====================================================");
         System.out.println("=== MATRIZ INICIAL ===");
         mostrarMatriz(A, listaElementos);
 
-        // **MEJORA: Warshall mejorado con mensajes de progreso**
+        //Warshall mejorado con mensajes de progreso
         boolean[][] clausuraMatriz = calcularClausuraWarshallMejorado(A, listaElementos);
 
-        // Mostrar matriz resultante
+        //mostrar matriz resultante
         System.out.println("\n=== MATRIZ CLAUSURA ===");
         mostrarMatriz(clausuraMatriz, listaElementos);
 
-        // Convertir a conjunto de pares - CORRECTO
+        //convertir a conjunto de pares - CORRECTO
         Set<Par> clausura = new HashSet<>();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -259,7 +262,7 @@ public class ClausuraTransitivaReflexiva {
         int n = A.length;
         boolean[][] R = new boolean[n][n];
 
-        // Paso 1: Inicializar matriz R (copia de A + diagonal reflexiva)
+        //paso 1: Inicializar matriz R (copia de A + diagonal reflexiva)
         for (int i = 0; i < n; i++) {
             System.arraycopy(A[i], 0, R[i], 0, n);
             R[i][i] = true; // Reflexividad garantizada
@@ -267,7 +270,7 @@ public class ClausuraTransitivaReflexiva {
 
         System.out.println("\n--- PROCESO WARSHALL ---");
 
-        // Paso 2: Algoritmo de Warshall
+        //paso 2: Algoritmo de Warshall
         for (int k = 0; k < n; k++) {
             System.out.println("Iteración k = " + k + " (elemento: " + elementos.get(k) + ")");
             int cambios = 0;
@@ -285,7 +288,7 @@ public class ClausuraTransitivaReflexiva {
 
             System.out.println("  Cambios en iteración " + k + ": " + cambios);
 
-            // Mostrar matriz intermedia (opcional, para n pequeños)
+            //mostrar matriz intermedia (opcional, para n pequeños)
             if (n <= 6) {
                 System.out.println("  Matriz intermedia:");
                 for (int i = 0; i < n; i++) {
@@ -317,7 +320,6 @@ public class ClausuraTransitivaReflexiva {
             System.out.println();
         }
     }
-
 
     public static void main(String[] args) {
 
