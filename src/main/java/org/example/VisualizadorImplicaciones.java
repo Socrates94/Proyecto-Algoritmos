@@ -13,6 +13,22 @@ public class VisualizadorImplicaciones extends JPanel {
     private Set<String> nodos;
     private int centroX, centroY, radio;
 
+    //1. Metodo estatico de entrada principal
+    //metodo estatico que inicia la vizualizacion
+    public static void mostrarGrafo(Set<ConversorClausulas.Clausula> clausulas) {
+        JFrame frame = new JFrame("Grafo de Implicaciones");
+        VisualizadorImplicaciones panel = new VisualizadorImplicaciones(clausulas);
+
+        frame.add(new JScrollPane(panel));
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+
+    //2. Metodos de construccion y configuracion del grafo
+    //inicializa el panel con las clausulas
     public VisualizadorImplicaciones(Set<ConversorClausulas.Clausula> clausulas) {
         this.clausulas = clausulas;
         this.posiciones = new HashMap<>();
@@ -24,6 +40,7 @@ public class VisualizadorImplicaciones extends JPanel {
         setBackground(Color.WHITE);
     }
 
+    //convierte las clausulas en estructura de grafo de implicaciones
     private void construirGrafoReal() {
         // PASO 1: Recolectar SOLO literales que aparecen en las cláusulas
         Set<String> literalesEnClausulas = new HashSet<>();
@@ -75,6 +92,7 @@ public class VisualizadorImplicaciones extends JPanel {
         calcularPosicionesCirculares();
     }
 
+    //decide si un complemento debe incluirse como nodo
     private boolean esComplementoNecesario(String complemento, Set<ConversorClausulas.Clausula> clausulas) {
         // Un complemento es necesario si aparece en el lado izquierdo de alguna implicación
         for (ConversorClausulas.Clausula c : clausulas) {
@@ -90,10 +108,12 @@ public class VisualizadorImplicaciones extends JPanel {
         return false;
     }
 
+    //devuelve el complemento de una literal
     private String obtenerComplemento(String literal) {
         return literal.startsWith("-") ? literal.substring(1) : "-" + literal;
     }
 
+    //distribuye los nodos en circulo
     private void calcularPosicionesCirculares() {
         List<String> listaNodos = new ArrayList<>(nodos);
         int n = listaNodos.size();
@@ -110,6 +130,9 @@ public class VisualizadorImplicaciones extends JPanel {
         }
     }
 
+
+    //3. Metodos de renderizado grafico
+    //dibuja el grafo completo, nodos, aristas texto.
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -180,7 +203,7 @@ public class VisualizadorImplicaciones extends JPanel {
         dibujarLeyenda(g2d);
     }
 
-
+    //dibuja leyenda explicativa en la parte inferior
     private void dibujarLeyenda(Graphics2D g2d) {
         int y = 550;
         g2d.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -210,17 +233,9 @@ public class VisualizadorImplicaciones extends JPanel {
         g2d.drawString("¬negativo → algo", 495, y + 12);
     }
 
-    public static void mostrarGrafo(Set<ConversorClausulas.Clausula> clausulas) {
-        JFrame frame = new JFrame("Grafo de Implicaciones");
-        VisualizadorImplicaciones panel = new VisualizadorImplicaciones(clausulas);
 
-        frame.add(new JScrollPane(panel));
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
-
+    //4. Metodo de dibujar las flechas y formas
+    //dibuja una arista curva en todos los nodos
     private void dibujarFlecha(Graphics2D g2d, int x1, int y1, int x2, int y2) {
         // Calcular el ángulo de la línea
         double angle = Math.atan2(y2 - y1, x2 - x1);
@@ -275,6 +290,7 @@ public class VisualizadorImplicaciones extends JPanel {
         drawArrowHead(g2d, (int)curveX, (int)curveY, tangentAngle);
     }
 
+    //dibuja la punta de la arista en el extremo
     private void drawArrowHead(Graphics2D g2d, int x, int y, double angle) {
         int arrowSize = 12;
 

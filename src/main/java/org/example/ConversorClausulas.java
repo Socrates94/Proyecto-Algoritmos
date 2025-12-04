@@ -67,6 +67,8 @@ public class ConversorClausulas {
         }
     }
 
+
+    //1. Metodos principales de conversion y visualizacion==================================
     //convertir la relacion en cláusulas unarias y binarias
     public static Set<Clausula> convertirRelacionAClausulas(Set<Par> relacion) {
         Set<Clausula> clausulas = new HashSet<>();
@@ -147,92 +149,6 @@ public class ConversorClausulas {
         System.out.println("=====================================================\n");
     }
 
-
-    // En ConversorClausulas.java, modifica graficarImplicaciones:
-    public static void graficarImplicaciones(Set<Clausula> clausulas) {
-        System.out.println("\n=== CREANDO GRÁFICO DE IMPLICACIONES ===");
-
-        try {
-            // Mostrar información de depuración
-            System.out.println("Cláusulas a graficar: " + clausulas);
-
-            // Filtrar cláusulas binarias (las que generan implicaciones)
-            Set<Clausula> clausulasBinarias = new HashSet<>();
-            for (Clausula c : clausulas) {
-                if (!c.esUnitaria()) {
-                    clausulasBinarias.add(c);
-                }
-            }
-
-            System.out.println("Cláusulas binarias: " + clausulasBinarias.size());
-
-            if (clausulasBinarias.isEmpty()) {
-                System.out.println("No hay cláusulas binarias para graficar");
-                return;
-            }
-
-            // Mostrar grafo
-            VisualizadorImplicaciones.mostrarGrafo(clausulasBinarias);
-
-        } catch (Exception e) {
-            System.out.println("Error al crear gráfico: " + e.getMessage());
-            e.printStackTrace();
-            mostrarGrafoTexto(clausulas);
-        }
-    }
-
-
-    public static void depurarClausulas(Set<Clausula> clausulas) {
-        System.out.println("\n=== DEPURACIÓN DE CLAÚSULAS ===");
-        for (Clausula c : clausulas) {
-            if (!c.esUnitaria()) {
-                System.out.println("Cláusula: " + c);
-                System.out.println("  literal1: " + c.literal1 + " → complemento: " + obtenerComplemento(c.literal1));
-                System.out.println("  literal2: " + c.literal2 + " → complemento: " + obtenerComplemento(c.literal2));
-            }
-        }
-    }
-
-
-
-    //metodo auxiliar para obtener complemento
-    private static String obtenerComplemento(String literal) {
-        if (literal.startsWith("-")) {
-            return literal.substring(1);
-        } else {
-            return "-" + literal;
-        }
-    }
-
-    //metodo de respaldo para mostrar el grafo en texto
-    private static void mostrarGrafoTexto(Set<Clausula> clausulas) {
-        System.out.println("\n=== REPRESENTACIÓN TEXTUAL DEL GRAFO ===");
-
-        Map<String, Set<String>> grafo = new HashMap<>();
-
-        // Construir grafo en memoria
-        for (Clausula c : clausulas) {
-            if (!c.esUnitaria()) {
-                String implicacion1 = obtenerComplemento(c.literal1) + " → " + c.literal2;
-                String implicacion2 = obtenerComplemento(c.literal2) + " → " + c.literal1;
-
-                String desde1 = obtenerComplemento(c.literal1);
-                String desde2 = obtenerComplemento(c.literal2);
-
-                grafo.computeIfAbsent(desde1, k -> new HashSet<>()).add(c.literal2);
-                grafo.computeIfAbsent(desde2, k -> new HashSet<>()).add(c.literal1);
-
-                System.out.println("  " + implicacion1);
-                System.out.println("  " + implicacion2);
-            }
-        }
-
-        System.out.println("\nResumen del grafo:");
-        for (Map.Entry<String, Set<String>> entry : grafo.entrySet()) {
-            System.out.println("  " + entry.getKey() + " → " + entry.getValue());
-        }
-    }
-
     //procesar y mostrar
     public static void procesarYMostrarClausulas(Set<Par> relacion) {
         //System.out.println("\n=====================================================");
@@ -251,8 +167,10 @@ public class ConversorClausulas {
         // MOSTRAR GRÁFICO
         graficarImplicaciones(clausulas);
 
-    }
+    }//Fin de metodos principales======================================================
 
+
+    //2. Analizar implicaciones========================================================
     // Análisis adicional de lo que significan las cláusulas
     public static void analizarImplicaciones(Set<Clausula> clausulas) {
         System.out.println("\n=====================================================");
@@ -271,6 +189,21 @@ public class ConversorClausulas {
         System.out.println("=====================================================\n");
     }
 
+    //muestra detalles de depuracion para las clausulas binarias
+    public static void depurarClausulas(Set<Clausula> clausulas) {
+        System.out.println("\n=== DEPURACIÓN DE CLAÚSULAS ===");
+        for (Clausula c : clausulas) {
+            if (!c.esUnitaria()) {
+                System.out.println("Cláusula: " + c);
+                System.out.println("  literal1: " + c.literal1 + " → complemento: " + obtenerComplemento(c.literal1));
+                System.out.println("  literal2: " + c.literal2 + " → complemento: " + obtenerComplemento(c.literal2));
+            }
+        }
+    }// Fin analilzar implicaciones==========================================================
+
+
+    //3. Metodos de resolucion 2-SAT
+    //determina si el conjunto de clausulas es satisfactible
     public static boolean resolver2SAT(Set<Par> relacion) {
         System.out.println("\n=====================================================");
         System.out.println("=== RESOLUCIÓN 2-SAT ===");
@@ -358,14 +291,6 @@ public class ConversorClausulas {
         return false;
     }
 
-    private static String extraerVariable(String literal) {
-        // Manejar tanto "1" como "-1", "¬1", etc.
-        if (literal.startsWith("-") || literal.startsWith("¬")) {
-            return literal.substring(1);
-        }
-        return literal;
-    }
-
     // Optimización: procesar cláusulas unitarias primero
     private static Map<String, Boolean> extraerAsignacionesForzadas(Set<Clausula> clausulas) {
         Map<String, Boolean> forzadas = new HashMap<>();
@@ -439,9 +364,75 @@ public class ConversorClausulas {
             }
         }
         return true;
+    }// fin de metodos para resolucion 2-SAT==========================================================
+
+
+    //4. Metodos de graficos de implicacioens
+    // prepara y llama al vizualizar el grafo
+    public static void graficarImplicaciones(Set<Clausula> clausulas) {
+        System.out.println("\n=== CREANDO GRÁFICO DE IMPLICACIONES ===");
+
+        try {
+            // Mostrar información de depuración
+            System.out.println("Cláusulas a graficar: " + clausulas);
+
+            // Filtrar cláusulas binarias (las que generan implicaciones)
+            Set<Clausula> clausulasBinarias = new HashSet<>();
+            for (Clausula c : clausulas) {
+                if (!c.esUnitaria()) {
+                    clausulasBinarias.add(c);
+                }
+            }
+
+            System.out.println("Cláusulas binarias: " + clausulasBinarias.size());
+
+            if (clausulasBinarias.isEmpty()) {
+                System.out.println("No hay cláusulas binarias para graficar");
+                return;
+            }
+
+            // Mostrar grafo
+            VisualizadorImplicaciones.mostrarGrafo(clausulasBinarias);
+
+        } catch (Exception e) {
+            System.out.println("Error al crear gráfico: " + e.getMessage());
+            e.printStackTrace();
+            mostrarGrafoTexto(clausulas);
+        }
     }
 
-    //metodos para inconsistencia
+    //metodo de respaldo para mostrar el grafo en texto
+    private static void mostrarGrafoTexto(Set<Clausula> clausulas) {
+        System.out.println("\n=== REPRESENTACIÓN TEXTUAL DEL GRAFO ===");
+
+        Map<String, Set<String>> grafo = new HashMap<>();
+
+        // Construir grafo en memoria
+        for (Clausula c : clausulas) {
+            if (!c.esUnitaria()) {
+                String implicacion1 = obtenerComplemento(c.literal1) + " → " + c.literal2;
+                String implicacion2 = obtenerComplemento(c.literal2) + " → " + c.literal1;
+
+                String desde1 = obtenerComplemento(c.literal1);
+                String desde2 = obtenerComplemento(c.literal2);
+
+                grafo.computeIfAbsent(desde1, k -> new HashSet<>()).add(c.literal2);
+                grafo.computeIfAbsent(desde2, k -> new HashSet<>()).add(c.literal1);
+
+                System.out.println("  " + implicacion1);
+                System.out.println("  " + implicacion2);
+            }
+        }
+
+        System.out.println("\nResumen del grafo:");
+        for (Map.Entry<String, Set<String>> entry : grafo.entrySet()) {
+            System.out.println("  " + entry.getKey() + " → " + entry.getValue());
+        }
+    }
+
+
+    //5. Metodos para clausulas transitivas
+    //calcula y muestra clausulas transitivas por resolucion
     public static void calcularClausurasTransitivas(Set<Par> relacion) {
         System.out.println("\n=====================================================");
         System.out.println("=== CLAUSURAS TRANSITIVAS POR RESOLUCIÓN ===");
@@ -486,6 +477,7 @@ public class ConversorClausulas {
         System.out.println("=====================================================\n");
     }
 
+    //calcula clausulas de un literal
     public static Set<String> calcularClausuraLiteral(String literalInicial, Set<Clausula> clausulas) {
         Set<String> clausura = new HashSet<>();
         clausura.add(literalInicial);
@@ -521,6 +513,7 @@ public class ConversorClausulas {
         return clausura;
     }
 
+    //detecta inconsistencias dentro de una clausula
     private static void verificarInconsistencias(Set<String> clausura, String literal) {
 
         for (String l : clausura) {
@@ -530,6 +523,26 @@ public class ConversorClausulas {
             }
         }
 
+    }// fin de metodos para las clusulas transitivas
+
+
+    //6. Metodos auxuliares
+    //metodo auxiliar para obtener complemento. Devuelve el complemento de un literal (¬A ↔ A)
+    private static String obtenerComplemento(String literal) {
+        if (literal.startsWith("-")) {
+            return literal.substring(1);
+        } else {
+            return "-" + literal;
+        }
     }
+
+    //extrae el nombre de la variable sin negacion
+    private static String extraerVariable(String literal) {
+        // Manejar tanto "1" como "-1", "¬1", etc.
+        if (literal.startsWith("-") || literal.startsWith("¬")) {
+            return literal.substring(1);
+        }
+        return literal;
+    }// fin de metodos auxiliares========================================
 
 }
